@@ -33,12 +33,5 @@
     "activeTab",
     "contextMenus",
     "storage"
-  ],
-
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "icebear67+firefox-ext-st@sfclub.cc"
-    }
-  }
-
+  ]
 }
