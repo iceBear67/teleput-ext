@@ -7,10 +7,10 @@ function testKey() {
   });
 }
 
-async function sendUrlAsync(url, key) {
+async function sendUrlAsync(url, id, key) {
   let desc = document.getElementById('teleput_send_desc').value.trim();
   const params = {
-    key: key,
+    chat_id: id,
     text: desc ? desc + '\n\n' + url : url
   };
   const options = {
@@ -18,7 +18,7 @@ async function sendUrlAsync(url, key) {
     body: JSON.stringify(params),
     headers: { 'Content-Type': 'application/json' }
   };
-  response = await window.fetch('https://teleput.textual.ru/post', options);
+  response = await window.fetch('https://api.telegram.org/bot' + key +"/sendMessage", options);
   if (!response.ok)
     document.getElementById('error').innerText = 'Error: ' + response.statusText;
   else
@@ -29,12 +29,22 @@ function sendUrl() {
   chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     if (tabs) {
       chrome.storage.sync.get('teleputKey', stored => {
+        //        console.log(stored)
         if (!stored || !stored.teleputKey) {
           chrome.runtime.openOptionsPage();
           window.close();
         }
-        else
-          sendUrlAsync(tabs[0].url, stored.teleputKey);
+        else {
+          chrome.storage.sync.get("teleputUserId", storedId => {
+            if (!storedId || !storedId.teleputUserId){
+              alert("user-id not found")
+              chrome.runtime.openOptionsPage();
+              window.close();
+            }else{
+              sendUrlAsync(tabs[0].url, storedId.teleputUserId, stored.teleputKey);
+            }
+          })
+        }
       });
     }
   });

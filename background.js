@@ -15,8 +15,8 @@ function createContextMenus() {
   });
 }
 
-function handleContextMenuWithKey(info, tab, key) {
-  let params = { key: key };
+function handleContextMenuWithKey(info, tab, key, uid) {
+  let params = { chat_id: uid };
   let media = null;
   let mime = null;
 
@@ -47,41 +47,18 @@ function handleContextMenuWithKey(info, tab, key) {
   }
 
   if (media) {
-    params['text'] = 'From ' + info.pageUrl;
-    // Try downloading first
-    window.fetch(info.srcUrl)
-      .then(response => response.blob())
-      .then(content => {
-        const formData = new FormData();
-        for (let k in params)
-          formData.append(k, params[k]);
-        formData.append('media', content);
-        return { method: 'POST', body: formData };
-      }).then(options => {
-        return window.fetch('https://teleput.textual.ru/upload', options);
-      })
-      .catch(error => {
-        console.error('Error uploading file', error);
-        params['media_url'] = info.srcUrl;
-        if (mime)
-          params['mime'] = mime;
-        const options = {
-          method: 'POST',
-          body: JSON.stringify(params),
-          headers: { 'Content-Type': 'application/json' }
-        };
-        return window.fetch('https://teleput.textual.ru/post', options);
-      });
-  } else if (params.text) {
+    alert("Currently unsupported.")
+    return
+  else if (params.text) {
     const options = {
       method: 'POST',
       body: JSON.stringify(params),
       headers: { 'Content-Type': 'application/json' }
     };
-    window.fetch('https://teleput.textual.ru/post', options)
+    window.fetch('https://api.telegram.org/bot'+key+"/sendMessage", options)
       .then(response => {
         if (!response.ok)
-          console.error('Teleput server error: ' + response.statusText);
+          console.error('Telegram server error: ' + response.statusText);
       })
       .catch(err => { console.error('Failed to send', err); });
   } else {
@@ -96,7 +73,13 @@ function handleContextMenu(info, tab) {
       chrome.runtime.openOptionsPage();
       return;
     }
-    handleContextMenuWithKey(info, tab, stored.teleputKey);
+    chrome.storage.sync.get('teleputUserId', storedId => {
+      if (!storedId || !storedId.teleputUserId) {
+        chrome.runtime.openOptionsPage();
+        return;
+      }
+      handleContextMenuWithKey(info, tab, stored.teleputKey, storedId.teleputUserId);
+    })
   });
 }
 
