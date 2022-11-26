@@ -1,10 +1,10 @@
 {
 
   "manifest_version": 2,
-  "name": "Teleput - Send to Telegram",
+  "name": "Send to Telegram",
   "version": "1.0",
 
-  "description": "Send any text, link, or an image to your Telegram account via the Teleput bot.",
+  "description": "Send any text, link, or an image to your Telegram account via your own bot. A fork of Teleput",
 
   "icons": {
     "48": "teleput-48.png",
@@ -37,7 +37,7 @@
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "teleput-addon@ilya.zverev.info"
+      "id": "icebear67+firefox-ext-st@sfclub.cc"
     }
   }
 
